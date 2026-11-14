@@ -1,18 +1,133 @@
-//@TeamNoteApp_HostAddress = http://localhost:5169
-@TeamNoteApp_HostAddress = https://localhost:7231
+@host = https://localhost:7231
 
-### Register user
+# Replace tokens and IDs from the registration responses.
+# When using an existing database, team IDs may not be 1 and 2.
+@aliceToken = REPLACE_WITH_ALICE_TOKEN
+@jamesToken = REPLACE_WITH_JAMES_TOKEN
 
-POST {{TeamNoteApp_HostAddress}}/api/users
+@aliceTeam = 1
+@jamesTeam = 2
+@noteId = 1
+
+### 1. Register Alice (automatically creates team 1)
+POST {{host}}/api/users
 Content-Type: application/json
 
 {
   "name": "Alice"
 }
 
-### Get current user
+### 2. Register James (automatically creates team 2)
+POST {{host}}/api/users
+Content-Type: application/json
 
-GET {{TeamNoteApp_HostAddress}}/api/users/me
-Authorization: Bearer REPLACE_WITH_TOKEN
+{
+  "name": "James"
+}
 
-###
+### 3. Get Alice's user information (200)
+GET {{host}}/api/users/me
+Authorization: Bearer {{aliceToken}}
+
+### 4. List Alice's teams (200)
+GET {{host}}/api/teams
+Authorization: Bearer {{aliceToken}}
+
+### 5. List Alice's team members (200)
+GET {{host}}/api/teams/{{aliceTeam}}/members
+Authorization: Bearer {{aliceToken}}
+
+### 6. James attempts to access Alice's notes before joining (404)
+GET {{host}}/api/teams/{{aliceTeam}}/notes
+Authorization: Bearer {{jamesToken}}
+
+### 7. Alice adds James to her team (204)
+POST {{host}}/api/teams/{{aliceTeam}}/members
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "userId": 2
+}
+
+### 8. Verify Alice's team members (200)
+GET {{host}}/api/teams/{{aliceTeam}}/members
+Authorization: Bearer {{aliceToken}}
+
+### 9. James lists his teams (200, should include both teams)
+GET {{host}}/api/teams
+Authorization: Bearer {{jamesToken}}
+
+### 10. James creates a note in Alice's team (201)
+POST {{host}}/api/teams/{{aliceTeam}}/notes
+Authorization: Bearer {{jamesToken}}
+Content-Type: application/json
+
+{
+  "title": "Note from James",
+  "content": "Hello Alice"
+}
+
+### 11. Alice lists notes in her team (200)
+GET {{host}}/api/teams/{{aliceTeam}}/notes
+Authorization: Bearer {{aliceToken}}
+
+### 12. Alice retrieves James's note (200)
+GET {{host}}/api/teams/{{aliceTeam}}/notes/{{noteId}}
+Authorization: Bearer {{aliceToken}}
+
+### 13. Alice edits James's note (200)
+PUT {{host}}/api/teams/{{aliceTeam}}/notes/{{noteId}}
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{
+  "title": "Updated by Alice",
+  "content": "Thanks James!"
+}
+
+### 14. James reads Alice's changes (200)
+GET {{host}}/api/teams/{{aliceTeam}}/notes/{{noteId}}
+Authorization: Bearer {{jamesToken}}
+
+### 15. Alice attempts to access James's team (404)
+GET {{host}}/api/teams/{{jamesTeam}}/notes
+Authorization: Bearer {{aliceToken}}
+
+### 16. James tries to add Alice to her own team (403)
+POST {{host}}/api/teams/{{aliceTeam}}/members
+Authorization: Bearer {{jamesToken}}
+Content-Type: application/json
+
+{
+  "userId": 1
+}
+
+### 17. Retrieve a nonexistent note (404)
+GET {{host}}/api/teams/{{aliceTeam}}/notes/999999
+Authorization: Bearer {{aliceToken}}
+
+### 18. Alice deletes the note (204)
+DELETE {{host}}/api/teams/{{aliceTeam}}/notes/{{noteId}}
+Authorization: Bearer {{aliceToken}}
+
+### 19. Confirm the note was deleted (404)
+GET {{host}}/api/teams/{{aliceTeam}}/notes/{{noteId}}
+Authorization: Bearer {{aliceToken}}
+
+### 20. Verify Alice's notes are empty (200)
+GET {{host}}/api/teams/{{aliceTeam}}/notes
+Authorization: Bearer {{aliceToken}}
+
+### 21. Alice removes James from her team (204)
+# Run this before step 18 if you want to test removal while the note exists.
+DELETE {{host}}/api/teams/{{aliceTeam}}/members/2
+Authorization: Bearer {{aliceToken}}
+
+### 22. James can no longer view Alice's team notes (404)
+GET {{host}}/api/teams/{{aliceTeam}}/notes
+Authorization: Bearer {{jamesToken}}
+
+### 23. Alice cannot remove herself (409)
+DELETE {{host}}/api/teams/{{aliceTeam}}/members/1
+Authorization: Bearer {{aliceToken}}

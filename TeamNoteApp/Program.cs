@@ -1,10 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
-using TeamNoteApp.Contracts;
 using TeamNoteApp.Data;
-using TeamNoteApp.Models;
-using TeamNoteApp.Security;
+using TeamNoteApp.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +14,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Convenience for a self-contained assessment: first launch creates the DB.
+// Production systems should apply migrations as a separate deployment step.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -35,57 +39,8 @@ app.MapGet("/api/health", async (AppDbContext db) =>
         : Results.Problem("Database unavailable");
 });
 
-// Register a new user
-app.MapPost("/api/users", async (
-    CreateUserRequest request,
-    AppDbContext db) =>
-{
-    var name = request.Name?.Trim();
-
-    if (string.IsNullOrWhiteSpace(name) || name.Length > 100)
-        return Results.BadRequest(new
-        {
-            error = "Name must be between 1 and 100 characters."
-        });
-
-    // Generate a cryptographically secure, 256-bit token.
-    var token = Convert.ToHexString(
-        RandomNumberGenerator.GetBytes(32));
-
-    var tokenHash = Convert.ToHexString(
-        SHA256.HashData(Encoding.UTF8.GetBytes(token)));
-
-    var user = new User
-    {
-        Name = name,
-        ApiTokenHash = tokenHash
-    };
-
-    db.Users.Add(user);
-    await db.SaveChangesAsync();
-
-    return Results.Created("/api/users/me", new
-    {
-        user.Id,
-        user.Name,
-        ApiToken = token
-    });
-});
-
-app.MapGet("/api/users/me", async (
-    HttpContext context,
-    AppDbContext db) =>
-{
-    var user = await ApiAuth.GetCurrentUserAsync(context, db);
-
-    if (user is null)
-        return Results.Unauthorized();
-
-    return Results.Ok(new
-    {
-        user.Id,
-        user.Name
-    });
-});
+app.MapUserEndpoints();
+app.MapTeamEndpoints();
+app.MapNoteEndpoints();
 
 app.Run();

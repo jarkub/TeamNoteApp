@@ -27,11 +27,9 @@ public static class ApiAuth
         if (token.Length != 64 || !token.All(Uri.IsHexDigit))
             return null;
 
-        // Tokens are machine-generated, not human input, so we don't need a
-        //  computationally expensive hasing algorithm, SHA-256 is fine but
-        //  can be improved upon in the future.
-        // Also, we only supply the token once. We store the hash to make
-        //  the encryption one-way.
+        // These high-entropy random tokens are not passwords. SHA-256 hashing
+        // allows lookup without storing a reusable bearer credential. This is
+        // hashing, not encryption; there is no decryption operation.
         var tokenHash = Convert.ToHexString(
             SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 

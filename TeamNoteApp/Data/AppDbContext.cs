@@ -45,6 +45,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany()
                 .HasForeignKey(t => t.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Each user automatically receives a team when registering. Users can
+            // collaborate across multiple teams through membership, but each user
+            // owns only one team. This simplifies onboarding, avoids
+            // unnecessary team - management endpoints, and keeps the assessment
+            // focused on collaborative note-taking.
+            entity.HasIndex(t => t.OwnerId).IsUnique();
         });
 
         // Team membership

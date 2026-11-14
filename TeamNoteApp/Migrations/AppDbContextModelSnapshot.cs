@@ -69,7 +69,8 @@ namespace TeamNoteApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("OwnerId")
+                        .IsUnique();
 
                     b.ToTable("Teams");
                 });

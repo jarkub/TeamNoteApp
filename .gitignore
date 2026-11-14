@@ -57,3 +57,9 @@ TestResult.xml
 nunit-*.xml
 
 .vs
+# Local development data and IDE settings
+*.db
+*.db-shm
+*.db-wal
+*.csproj.user
+*.suo
