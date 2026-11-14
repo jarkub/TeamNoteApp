@@ -1,6 +1,18 @@
-@TeamNoteApp_HostAddress = http://localhost:5169
+//@TeamNoteApp_HostAddress = http://localhost:5169
+@TeamNoteApp_HostAddress = https://localhost:7231
 
-GET {{TeamNoteApp_HostAddress}}/weatherforecast/
-Accept: application/json
+### Register user
+
+POST {{TeamNoteApp_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Alice"
+}
+
+### Get current user
+
+GET {{TeamNoteApp_HostAddress}}/api/users/me
+Authorization: Bearer REPLACE_WITH_TOKEN
 
 ###

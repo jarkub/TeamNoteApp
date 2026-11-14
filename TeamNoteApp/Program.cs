@@ -4,6 +4,7 @@ using System.Text;
 using TeamNoteApp.Contracts;
 using TeamNoteApp.Data;
 using TeamNoteApp.Models;
+using TeamNoteApp.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +69,22 @@ app.MapPost("/api/users", async (
         user.Id,
         user.Name,
         ApiToken = token
+    });
+});
+
+app.MapGet("/api/users/me", async (
+    HttpContext context,
+    AppDbContext db) =>
+{
+    var user = await ApiAuth.GetCurrentUserAsync(context, db);
+
+    if (user is null)
+        return Results.Unauthorized();
+
+    return Results.Ok(new
+    {
+        user.Id,
+        user.Name
     });
 });
 
