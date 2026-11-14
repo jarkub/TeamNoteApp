@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamNotesApp.Models;
+using TeamNoteApp.Models;
 
-namespace TeamNotesApp.Data;
+namespace TeamNoteApp.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
     : DbContext(options)

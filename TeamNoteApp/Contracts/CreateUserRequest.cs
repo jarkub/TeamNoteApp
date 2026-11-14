@@ -1,3 +1,3 @@
-﻿namespace TeamNotesApp.Contracts;
+﻿namespace TeamNoteApp.Contracts;
 
 public record CreateUserRequest(string? Name);

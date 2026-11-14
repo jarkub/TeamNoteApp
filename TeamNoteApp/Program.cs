@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using TeamNotesApp.Contracts;
-using TeamNotesApp.Data;
-using TeamNotesApp.Models;
-using TeamNotesApp.Security;
+using TeamNoteApp.Contracts;
+using TeamNoteApp.Data;
+using TeamNoteApp.Models;
+using TeamNoteApp.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 

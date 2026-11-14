@@ -2,22 +2,25 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TeamNotesApp.Data;
+using TeamNoteApp.Data;
 
 #nullable disable
 
-namespace TeamNotesApp.Migrations
+namespace TeamNoteApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261114163422_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.15");
 
-            modelBuilder.Entity("TeamNotesApp.Models.Note", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +56,7 @@ namespace TeamNotesApp.Migrations
                     b.ToTable("Notes");
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.Team", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.Team", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +77,7 @@ namespace TeamNotesApp.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.TeamMember", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.TeamMember", b =>
                 {
                     b.Property<int>("TeamId")
                         .HasColumnType("INTEGER");
@@ -89,7 +92,7 @@ namespace TeamNotesApp.Migrations
                     b.ToTable("TeamMembers");
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.User", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,39 +116,39 @@ namespace TeamNotesApp.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.Note", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.Note", b =>
                 {
-                    b.HasOne("TeamNotesApp.Models.User", null)
+                    b.HasOne("TeamNoteApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TeamNotesApp.Models.Team", null)
+                    b.HasOne("TeamNoteApp.Models.Team", null)
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.Team", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.Team", b =>
                 {
-                    b.HasOne("TeamNotesApp.Models.User", null)
+                    b.HasOne("TeamNoteApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TeamNotesApp.Models.TeamMember", b =>
+            modelBuilder.Entity("TeamNoteApp.Models.TeamMember", b =>
                 {
-                    b.HasOne("TeamNotesApp.Models.Team", null)
+                    b.HasOne("TeamNoteApp.Models.Team", null)
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TeamNotesApp.Models.User", null)
+                    b.HasOne("TeamNoteApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)

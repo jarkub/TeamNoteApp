@@ -1,4 +1,4 @@
-﻿namespace TeamNotesApp.Models;
+﻿namespace TeamNoteApp.Models;
 
 public class TeamMember
 {

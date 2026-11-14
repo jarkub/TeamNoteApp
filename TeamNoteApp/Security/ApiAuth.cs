@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using TeamNotesApp.Data;
-using TeamNotesApp.Models;
+using TeamNoteApp.Data;
+using TeamNoteApp.Models;
 
-namespace TeamNotesApp.Security;
+namespace TeamNoteApp.Security;
 
 public static class ApiAuth
 {
