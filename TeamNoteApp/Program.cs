@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using TeamNoteApp.Contracts;
 using TeamNoteApp.Data;
+using TeamNoteApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +32,43 @@ app.MapGet("/api/health", async (AppDbContext db) =>
     return canConnect
         ? Results.Ok(new { status = "healthy" })
         : Results.Problem("Database unavailable");
+});
+
+// Register a new user
+app.MapPost("/api/users", async (
+    CreateUserRequest request,
+    AppDbContext db) =>
+{
+    var name = request.Name?.Trim();
+
+    if (string.IsNullOrWhiteSpace(name) || name.Length > 100)
+        return Results.BadRequest(new
+        {
+            error = "Name must be between 1 and 100 characters."
+        });
+
+    // Generate a cryptographically secure, 256-bit token.
+    var token = Convert.ToHexString(
+        RandomNumberGenerator.GetBytes(32));
+
+    var tokenHash = Convert.ToHexString(
+        SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+
+    var user = new User
+    {
+        Name = name,
+        ApiTokenHash = tokenHash
+    };
+
+    db.Users.Add(user);
+    await db.SaveChangesAsync();
+
+    return Results.Created("/api/users/me", new
+    {
+        user.Id,
+        user.Name,
+        ApiToken = token
+    });
 });
 
 app.Run();
