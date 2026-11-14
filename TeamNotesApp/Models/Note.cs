@@ -1,4 +1,4 @@
-﻿namespace TeamNoteApp.Models;
+﻿namespace TeamNotesApp.Models;
 
 public class Note
 {

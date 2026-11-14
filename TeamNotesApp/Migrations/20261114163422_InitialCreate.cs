@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TeamNoteApp.Migrations
+namespace TeamNotesApp.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

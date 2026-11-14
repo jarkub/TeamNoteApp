@@ -1,0 +1,18 @@
+//@TeamNotesApp_HostAddress = http://localhost:5169
+@TeamNotesApp_HostAddress = https://localhost:7231
+
+### Register user
+
+POST {{TeamNotesApp_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Alice"
+}
+
+### Get current user
+
+GET {{TeamNotesApp_HostAddress}}/api/users/me
+Authorization: Bearer REPLACE_WITH_TOKEN
+
+###
